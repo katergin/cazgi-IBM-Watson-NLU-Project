@@ -31,19 +31,93 @@ app.get("/", (req, res) => {
 });
 
 app.get("/url/emotion", (req, res) => {
-    return res.send({"happy":"90", "sad":"10"});
+    const params = {
+        'url': req.query.url,
+        'features': {
+            'entities': {
+                'emotion': true,
+                'limit': 1
+            },
+            'keywords': {
+                'emotion': true,
+                'limit': 1
+            }
+        }
+    }
+
+    getNLUInstance().analyze(params).then( analysisResults => {
+        return res.send(analysisResults.result.keywords[0].emotion)
+    }).catch(error => {
+        console.log("Error: " + error);
+    })
 });
 
 app.get("/url/sentiment", (req, res) => {
-    return res.send("url sentiment for " + req.query.url);
+    const params = {
+        'url': req.query.url,
+        'features': {
+            'entities': {
+                'sentiment': true,
+                'limit': 1
+            },
+            'keywords': {
+                'sentiment': true,
+                'limit': 1
+            }
+        }
+    }
+
+    getNLUInstance().analyze(params).then(analysisResults => {
+        const results = analysisResults.result.keywords[0].sentiment.score;
+        console.log(results);
+        return res.send(results);
+    }).catch(error => {
+        console.log("Error: " + error);
+    })
 });
 
-app.get("/text/emotion", (req, res) => {
-    return res.send({"happy":"10", "sad":"90"});
+app.get("/text/emotion/", (request, response) => {
+    const params = {
+        'text': req.query.text,
+        'features': {
+            'entities': {
+                'emotion': true,
+                'limit': 1
+            },
+            'keywords': {
+                'emotion': true,
+                'limit': 1
+            }
+        }
+    };
+
+    getNLUInstance().analyze(params).then(analysisResults => {
+        return res.send(analysisResults.result.keywords[0].emotion)
+    }).catch(error => {
+        console.log('Error:', error);
+    });
 });
 
 app.get("/text/sentiment", (req, res) => {
-    return res.send("text sentiment for " + req.query.text);
+    const params = {
+        'text': req.query.text,
+        'features': {
+            'entities': {
+                'sentiment': true,
+                'limit': 1
+            },
+            'keywords': {
+                'sentiment': true,
+                'limit': 1
+            }
+        }
+    };
+
+    getNLUInstance().analyze(params).then(analysisResults => {
+        return res.send(analysisResults.result.keywords[0].sentiment.score)
+    }).catch(error => {
+        console.log('Error:', error);
+    });
 });
 
 let server = app.listen(8080, () => {
