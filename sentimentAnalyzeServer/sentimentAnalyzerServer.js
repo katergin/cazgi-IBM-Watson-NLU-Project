@@ -26,13 +26,13 @@ function getNLUInstance() {
 }
 
 
-app.get("/", (req, res) => {
-    res.render('index.html');
+app.get("/", (request, response) => {
+    response.render('index.html');
 });
 
-app.get("/url/emotion", (req, res) => {
+app.get("/url/emotion", (request, response) => {
     const params = {
-        'url': req.query.url,
+        'url': request.query.url,
         'features': {
             'entities': {
                 'emotion': true,
@@ -46,15 +46,15 @@ app.get("/url/emotion", (req, res) => {
     }
 
     getNLUInstance().analyze(params).then( analysisResults => {
-        return res.send(analysisResults.result.keywords[0].emotion)
+        return response.send(analysisResults.result.keywords[0].emotion)
     }).catch(error => {
         console.log("Error: " + error);
     })
 });
 
-app.get("/url/sentiment", (req, res) => {
+app.get("/url/sentiment", (request, response) => {
     const params = {
-        'url': req.query.url,
+        'url': request.query.url,
         'features': {
             'entities': {
                 'sentiment': true,
@@ -68,17 +68,15 @@ app.get("/url/sentiment", (req, res) => {
     }
 
     getNLUInstance().analyze(params).then(analysisResults => {
-        const results = analysisResults.result.keywords[0].sentiment.score;
-        console.log(results);
-        return res.send(results);
+        return response.send(analysisResults.result.keywords[0].sentiment.label);
     }).catch(error => {
         console.log("Error: " + error);
     })
 });
 
-app.get("/text/emotion/", (request, response) => {
+app.get("/text/emotion", (request, response) => {
     const params = {
-        'text': req.query.text,
+        'text': request.query.text,
         'features': {
             'entities': {
                 'emotion': true,
@@ -92,15 +90,15 @@ app.get("/text/emotion/", (request, response) => {
     };
 
     getNLUInstance().analyze(params).then(analysisResults => {
-        return res.send(analysisResults.result.keywords[0].emotion)
+        return response.send(analysisResults.result.keywords[0].emotion)
     }).catch(error => {
         console.log('Error:', error);
     });
 });
 
-app.get("/text/sentiment", (req, res) => {
+app.get("/text/sentiment", (request, response) => {
     const params = {
-        'text': req.query.text,
+        'text': request.query.text,
         'features': {
             'entities': {
                 'sentiment': true,
@@ -114,7 +112,7 @@ app.get("/text/sentiment", (req, res) => {
     };
 
     getNLUInstance().analyze(params).then(analysisResults => {
-        return res.send(analysisResults.result.keywords[0].sentiment.score)
+        return response.send(analysisResults.result.keywords[0].sentiment.label)
     }).catch(error => {
         console.log('Error:', error);
     });
